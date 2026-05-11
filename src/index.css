@@ -7,15 +7,34 @@
   --sr-yellow: #fbbf24;
   --sr-gradient: linear-gradient(135deg, var(--sr-purple), var(--sr-pink), var(--sr-orange));
   
+  /* Dark Mode (Default) */
   --bg-dark: #050508;
   --bg-card: #0f172a;
+  --bg-gradient: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #050508 100%);
   --text-primary: #ffffff;
   --text-secondary: #94a3b8;
-  
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-hover: rgba(255, 255, 255, 0.06);
+  --light-unit-bg: #111;
+  --light-unit-border: #1e293b;
+}
 
+:root.light-mode {
+  /* Light Mode */
+  --bg-dark: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-gradient: radial-gradient(circle at 50% -20%, #e2e8f0 0%, #f1f5f9 100%);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --glass-bg: rgba(0, 0, 0, 0.03);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-hover: rgba(0, 0, 0, 0.05);
+  --light-unit-bg: #e2e8f0;
+  --light-unit-border: #cbd5e1;
+}
+
+:root {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -43,7 +62,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
-  background: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #050508 100%);
+  background: var(--bg-gradient);
 }
 
 #root {

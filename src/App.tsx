@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, History, Zap } from 'lucide-react';
+import { Trophy, History, Zap, Sun, Moon } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import './App.css';
 
@@ -27,6 +27,23 @@ export default function App() {
     const saved = localStorage.getItem('sr_reaction_stats');
     return saved ? JSON.parse(saved) : { best: null, last: null, history: [] };
   });
+
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem('sr_theme');
+    return saved !== 'light'; // Default to dark
+  });
+
+  // --- Efeito de Tema ---
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.classList.remove('light-mode');
+      localStorage.setItem('sr_theme', 'dark');
+    } else {
+      root.classList.add('light-mode');
+      localStorage.setItem('sr_theme', 'light');
+    }
+  }, [isDarkMode]);
 
   // Refs para lógica de precisão
   const startTimeRef = useRef<number>(0);
@@ -151,6 +168,14 @@ export default function App() {
               <p className="subtitle">Official Training System</p>
             </div>
           </div>
+          
+          <button 
+            className="theme-toggle glass-panel" 
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            title="Alternar Tema"
+          >
+            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
         </motion.div>
       </header>
 
