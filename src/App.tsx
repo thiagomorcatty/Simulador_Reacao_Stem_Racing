@@ -185,88 +185,100 @@ export default function App() {
         </button>
       </header>
 
-      {/* Gantry */}
-      <main className="main-stage">
-        <div className="gantry-container glass-panel">
-          <div className="lights-grid">
-            {[0, 1, 2, 3, 4].map((i) => (
-              <div key={i} className={`light-unit ${activeLights > i ? 'active' : ''}`}>
-                <div className="light-bulb"></div>
-                <div className="light-glow"></div>
+      {/* Main Content Layout */}
+      <div className="layout-content">
+        <main className="main-stage">
+          <div className="gantry-container glass-panel">
+            <div className="lights-grid">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <div key={i} className={`light-unit ${activeLights > i ? 'active' : ''}`}>
+                  <div className="light-bulb"></div>
+                  <div className="light-glow"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Display Central */}
+          <div className="display-area">
+            <AnimatePresence mode="wait">
+              <motion.div 
+                key={state}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.1 }}
+                className="status-message"
+              >
+                {state === 'IDLE' && <span className="text-muted">PRONTO PARA LARGADA?</span>}
+                {state === 'COUNTDOWN' && <span className="text-warning">PREPARAR...</span>}
+                {state === 'WAITING' && <span className="text-warning animate-pulse">ATENÇÃO!</span>}
+                {state === 'GO' && <span className="text-success glow-text">REAGE AGORA!</span>}
+                {state === 'FALSE_START' && <span className="text-danger">QUEIMOU A LARGADA!</span>}
+                {state === 'RESULT' && <span className="text-accent">TEMPO DE REAÇÃO</span>}
+              </motion.div>
+            </AnimatePresence>
+
+            <div className="timer-box font-digital">
+              <span className={state === 'FALSE_START' ? 'text-danger' : ''}>
+                {state === 'FALSE_START' ? 'FAIL' : timer.toString().padStart(3, '0')}
+              </span>
+              <span className="unit">ms</span>
+            </div>
+          </div>
+
+          {/* Botão de Ação */}
+          <motion.button
+            className={`action-btn ${state === 'GO' ? 'go-state' : ''} ${state === 'FALSE_START' ? 'fail-state' : ''}`}
+            whileTap={{ scale: 0.96 }}
+            onClick={handleInteraction}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              handleInteraction();
+            }}
+          >
+            {state === 'IDLE' && 'INICIAR SEQUÊNCIA'}
+            {(state === 'COUNTDOWN' || state === 'WAITING') && 'AGUARDE...'}
+            {state === 'GO' && 'CLIQUE AGORA!'}
+            {state === 'RESULT' && 'TENTAR NOVAMENTE'}
+            {state === 'FALSE_START' && 'REINICIAR'}
+          </motion.button>
+        </main>
+
+        {/* Stats Board (Sidebar) */}
+        <aside className="stats-sidebar glass-panel">
+          <div className="stat-group">
+            <div className="stat-item">
+              <div className="stat-label"><Trophy size={14} /> MELHOR</div>
+              <div className="stat-value font-digital text-success">
+                {stats.best ? `${stats.best}ms` : '--'}
               </div>
-            ))}
+            </div>
+            <div className="stat-item">
+              <div className="stat-label"><Zap size={14} /> ÚLTIMO</div>
+              <div className="stat-value font-digital text-accent">
+                {stats.last ? `${stats.last}ms` : '--'}
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Display Central */}
-        <div className="display-area">
-          <AnimatePresence mode="wait">
-            <motion.div 
-              key={state}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.1 }}
-              className="status-message"
-            >
-              {state === 'IDLE' && <span className="text-muted">PRONTO PARA LARGADA?</span>}
-              {state === 'COUNTDOWN' && <span className="text-warning">PREPARAR...</span>}
-              {state === 'WAITING' && <span className="text-warning animate-pulse">ATENÇÃO!</span>}
-              {state === 'GO' && <span className="text-success glow-text">REAGE AGORA!</span>}
-              {state === 'FALSE_START' && <span className="text-danger">QUEIMOU A LARGADA!</span>}
-              {state === 'RESULT' && <span className="text-accent">TEMPO DE REAÇÃO</span>}
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="timer-box font-digital">
-            <span className={state === 'FALSE_START' ? 'text-danger' : ''}>
-              {state === 'FALSE_START' ? 'FAIL' : timer.toString().padStart(3, '0')}
-            </span>
-            <span className="unit">ms</span>
+          <div className="stat-item history-section">
+            <div className="stat-label"><History size={14} /> RECENTES</div>
+            <div className="history-list">
+              {stats.history.map((t, i) => (
+                <motion.div 
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  key={i} 
+                  className="history-entry font-digital"
+                >
+                  {t}ms
+                </motion.div>
+              ))}
+              {stats.history.length === 0 && <span className="text-xs text-muted">Nenhum registro</span>}
+            </div>
           </div>
-        </div>
-
-        {/* Botão de Ação */}
-        <motion.button
-          className={`action-btn ${state === 'GO' ? 'go-state' : ''} ${state === 'FALSE_START' ? 'fail-state' : ''}`}
-          whileTap={{ scale: 0.96 }}
-          onClick={handleInteraction}
-          onTouchStart={(e) => {
-            e.preventDefault();
-            handleInteraction();
-          }}
-        >
-          {state === 'IDLE' && 'INICIAR SEQUÊNCIA'}
-          {(state === 'COUNTDOWN' || state === 'WAITING') && 'AGUARDE...'}
-          {state === 'GO' && 'CLIQUE AGORA!'}
-          {state === 'RESULT' && 'TENTAR NOVAMENTE'}
-          {state === 'FALSE_START' && 'REINICIAR'}
-        </motion.button>
-      </main>
-
-      {/* Stats Board */}
-      <footer className="stats-board glass-panel">
-        <div className="stat-item">
-          <div className="stat-label"><Trophy size={14} /> MELHOR</div>
-          <div className="stat-value font-digital text-success">
-            {stats.best ? `${stats.best}ms` : '--'}
-          </div>
-        </div>
-        <div className="stat-item border-x">
-          <div className="stat-label"><Zap size={14} /> ÚLTIMO</div>
-          <div className="stat-value font-digital text-accent">
-            {stats.last ? `${stats.last}ms` : '--'}
-          </div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-label"><History size={14} /> RECENTES</div>
-          <div className="history-dots">
-            {stats.history.map((t, i) => (
-              <div key={i} className="dot" title={`${t}ms`}></div>
-            ))}
-            {stats.history.length === 0 && <span className="text-xs text-muted">Nenhum</span>}
-          </div>
-        </div>
-      </footer>
+        </aside>
+      </div>
     </div>
   );
 }
