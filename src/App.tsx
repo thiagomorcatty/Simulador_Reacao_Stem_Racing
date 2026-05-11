@@ -250,17 +250,23 @@ export default function App() {
       </div>
 
       {/* Footer com Parceiros */}
-      <footer className="app-footer">
-        <div className="footer-label">PARCEIROS E DESENVOLVIMENTO</div>
+      <footer className="app-footer glass-panel">
         <div className="footer-logos">
           <div className="partner-item">
-            <span className="partner-label">Organização</span>
             <img src={logoProjetando} alt="Projetando o Futuro" className="partner-logo" />
+            <div className="partner-info">
+              <span className="partner-label">Organização</span>
+            </div>
           </div>
           <div className="partner-item">
-            <span className="partner-label">Desenvolvido por</span>
             <img src={logoRobonuvem} alt="Robonuvem" className="partner-logo" />
+            <div className="partner-info">
+              <span className="partner-label">Desenvolvimento</span>
+            </div>
           </div>
+        </div>
+        <div className="footer-credits font-digital">
+          © 2026 STEM RACING BRAZIL
         </div>
       </footer>
     </div>
