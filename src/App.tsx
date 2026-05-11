@@ -15,7 +15,7 @@ type RaceState = 'IDLE' | 'COUNTDOWN' | 'WAITING' | 'GO' | 'RESULT' | 'FALSE_STA
 interface Stats {
   best: number | null;
   last: number | null;
-  history: number[];
+  history: (number | string)[];
 }
 
 export default function App() {
@@ -50,6 +50,7 @@ export default function App() {
   const timerIntervalRef = useRef<number | null>(null);
   const countdownIntervalsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const jumpStartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastStateChangeRef = useRef<number>(0);
 
   // --- Persistência ---
   useEffect(() => {
@@ -109,19 +110,32 @@ export default function App() {
   }, [clearAllTimeouts]);
 
   const handleInteraction = useCallback(() => {
+    const now = performance.now();
+    
+    const lockout = (state === 'RESULT' || state === 'FALSE_START') ? 1000 : 300;
+    if (now - lastStateChangeRef.current < lockout) return;
+
     if (state === 'IDLE' || state === 'RESULT' || state === 'FALSE_START') {
+      lastStateChangeRef.current = now;
       startSequence();
     } else if (state === 'COUNTDOWN' || state === 'WAITING') {
       // Queima de largada
       clearAllTimeouts();
       setState('FALSE_START');
+      lastStateChangeRef.current = now;
+      
+      setStats(prev => ({
+        ...prev,
+        history: ['FAIL', ...prev.history].slice(0, 5)
+      }));
     } else if (state === 'GO') {
       // Reação bem sucedida
       stopTimer();
       const reactionTime = Math.round(performance.now() - startTimeRef.current);
+      lastStateChangeRef.current = now;
       
       setStats(prev => {
-        const isNewBest = prev.best === null || reactionTime < prev.best;
+        const isNewBest = (prev.best === null || reactionTime < prev.best) && reactionTime > 0;
         if (isNewBest) {
           confetti({
             particleCount: 150,
@@ -223,9 +237,8 @@ export default function App() {
           {/* Botão de Ação */}
           <motion.button
             className={`action-btn ${state === 'GO' ? 'go-state' : ''} ${state === 'FALSE_START' ? 'fail-state' : ''}`}
-            whileTap={{ scale: 0.96 }}
-            onClick={handleInteraction}
-            onTouchStart={(e) => {
+            whileTap={{ scale: 0.98 }}
+            onPointerDown={(e) => {
               e.preventDefault();
               handleInteraction();
             }}
@@ -263,9 +276,9 @@ export default function App() {
                   initial={{ x: 20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   key={i} 
-                  className="history-entry font-digital"
+                  className={`history-entry font-digital ${typeof t !== 'number' ? 'fail' : ''}`}
                 >
-                  {t}ms
+                  {typeof t === 'number' ? `${t}ms` : t}
                 </motion.div>
               ))}
               {stats.history.length === 0 && <span className="text-xs text-muted">Nenhum registro</span>}

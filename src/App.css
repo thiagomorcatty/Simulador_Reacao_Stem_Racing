@@ -139,6 +139,9 @@
   color: white;
   border-bottom: 5px solid #18181b;
   transition: all 0.05s;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .action-btn:active { transform: translateY(4px); border-bottom-width: 0; }
@@ -180,6 +183,12 @@
   background: rgba(255,255,255,0.02);
   border-radius: 6px;
   border-left: 2px solid var(--sr-purple);
+}
+
+.history-entry.fail {
+  border-left-color: #ef4444;
+  color: #ef4444;
+  opacity: 0.8;
 }
 
 /* Footer - Novo Design Profissional */
