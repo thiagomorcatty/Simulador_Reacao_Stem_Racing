@@ -121,7 +121,7 @@ export default function App() {
       });
       setState('RESULT');
     }
-  }, [state, startSequence, clearAllTimeouts, isSoundEnabled]);
+  }, [state, startSequence, clearAllTimeouts]);
 
   // Teclado (Espaço)
   useEffect(() => {
