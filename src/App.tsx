@@ -132,6 +132,7 @@ export default function App() {
       // Reação bem sucedida
       stopTimer();
       const reactionTime = Math.round(performance.now() - startTimeRef.current);
+      setTimer(reactionTime);
       lastStateChangeRef.current = now;
       
       setStats(prev => {
