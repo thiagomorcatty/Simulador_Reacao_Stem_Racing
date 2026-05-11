@@ -4,6 +4,11 @@ import { Trophy, History, Zap } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import './App.css';
 
+// Logos
+import logoStem from './assets/STEM Racing TM_Location_Logo_RGB_Brazil - Full Colour Black_RGB.png';
+import logoProjetando from './assets/Logo Projetando o Futuro.png';
+import logoRobonuvem from './assets/logo_robonuvem.png';
+
 // --- Tipos e Estados ---
 type RaceState = 'IDLE' | 'COUNTDOWN' | 'WAITING' | 'GO' | 'RESULT' | 'FALSE_START';
 
@@ -140,8 +145,7 @@ export default function App() {
           className="header-content"
         >
           <div className="logo-wrapper">
-            {/* Placeholder para o logo. O usuário deve garantir que logo.png exista em public/ */}
-            <img src="/logo.png" alt="Stem Racing Logo" className="header-logo" onError={(e) => e.currentTarget.style.display = 'none'} />
+            <img src={logoStem} alt="Stem Racing Brazil" className="header-logo" />
             <div className="brand-info">
               <h1 className="sr-title">SIMULADOR <span className="highlight">STEM RACING</span></h1>
               <p className="subtitle">Official Training System</p>
@@ -244,6 +248,21 @@ export default function App() {
           </div>
         </aside>
       </div>
+
+      {/* Footer com Parceiros */}
+      <footer className="app-footer">
+        <div className="footer-label">PARCEIROS E DESENVOLVIMENTO</div>
+        <div className="footer-logos">
+          <div className="partner-item">
+            <span className="partner-label">Organização</span>
+            <img src={logoProjetando} alt="Projetando o Futuro" className="partner-logo" />
+          </div>
+          <div className="partner-item">
+            <span className="partner-label">Desenvolvido por</span>
+            <img src={logoRobonuvem} alt="Robonuvem" className="partner-logo" />
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
