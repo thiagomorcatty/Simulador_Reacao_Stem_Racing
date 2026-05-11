@@ -133,17 +133,20 @@ export default function App() {
   return (
     <div className="app-container" onMouseDown={(e) => e.preventDefault()}>
       {/* Header / Logo */}
-      <header className="header">
+      <header className="header glass-panel">
         <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="logo-container"
+          className="header-content"
         >
-          <div className="sr-logo">
-            <span className="sr-text">STEM RACING</span>
-            <div className="sr-underline"></div>
+          <div className="logo-wrapper">
+            {/* Placeholder para o logo. O usuário deve garantir que logo.png exista em public/ */}
+            <img src="/logo.png" alt="Stem Racing Logo" className="header-logo" onError={(e) => e.currentTarget.style.display = 'none'} />
+            <div className="brand-info">
+              <h1 className="sr-title">SIMULADOR <span className="highlight">STEM RACING</span></h1>
+              <p className="subtitle">Official Training System</p>
+            </div>
           </div>
-          <p className="subtitle">REACTION SIMULATOR V1</p>
         </motion.div>
       </header>
 
