@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX, Trophy, History, Zap } from 'lucide-react';
+import { Trophy, History, Zap } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import './App.css';
 
@@ -13,33 +13,6 @@ interface Stats {
   history: number[];
 }
 
-// --- Synth Audio Utility ---
-const playTone = (freq: number, duration: number, type: OscillatorType = 'sine') => {
-  try {
-    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
-
-    oscillator.type = type;
-    oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
-    
-    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-
-    oscillator.start();
-    oscillator.stop(audioCtx.currentTime + duration);
-  } catch (e) {
-    console.error('Audio context error:', e);
-  }
-};
-
-const playBeep = () => playTone(880, 0.1, 'square'); // Luz acendendo
-const playStartBeep = () => playTone(1760, 0.3, 'sine'); // Largada (Luzes apagam)
-const playErrorBeep = () => playTone(220, 0.4, 'sawtooth'); // Queima de largada
-
 export default function App() {
   // Estados do Simulador
   const [state, setState] = useState<RaceState>('IDLE');
@@ -49,7 +22,6 @@ export default function App() {
     const saved = localStorage.getItem('sr_reaction_stats');
     return saved ? JSON.parse(saved) : { best: null, last: null, history: [] };
   });
-  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
 
   // Refs para lógica de precisão
   const startTimeRef = useRef<number>(0);
@@ -99,7 +71,6 @@ export default function App() {
     sequence.forEach((delay, index) => {
       const timeout = setTimeout(() => {
         setActiveLights(index + 1);
-        if (isSoundEnabled) playBeep();
         
         if (index === 4) {
           setState('WAITING');
@@ -107,14 +78,13 @@ export default function App() {
           jumpStartTimeoutRef.current = setTimeout(() => {
             setState('GO');
             setActiveLights(0);
-            if (isSoundEnabled) playStartBeep();
             startTimer();
           }, randomDelay);
         }
       }, delay);
       countdownIntervalsRef.current.push(timeout);
     });
-  }, [clearAllTimeouts, isSoundEnabled]);
+  }, [clearAllTimeouts]);
 
   const handleInteraction = useCallback(() => {
     if (state === 'IDLE' || state === 'RESULT' || state === 'FALSE_START') {
@@ -123,7 +93,6 @@ export default function App() {
       // Queima de largada
       clearAllTimeouts();
       setState('FALSE_START');
-      if (isSoundEnabled) playErrorBeep();
     } else if (state === 'GO') {
       // Reação bem sucedida
       stopTimer();
@@ -176,13 +145,6 @@ export default function App() {
           </div>
           <p className="subtitle">REACTION SIMULATOR V1</p>
         </motion.div>
-
-        <button 
-          className={`sound-toggle ${!isSoundEnabled ? 'disabled' : ''}`}
-          onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-        >
-          {isSoundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
-        </button>
       </header>
 
       {/* Main Content Layout */}
